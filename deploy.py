@@ -43,7 +43,9 @@ def call(method, path, body=None):
     req = urllib.request.Request(
         API + path, method=method,
         data=json.dumps(body).encode() if body is not None else None,
-        headers={"Authorization": f"Bearer {KEY}", "Content-Type": "application/json"})
+        # Cloudflare in front of RunPod 403s (error 1010) urllib's default User-Agent.
+        headers={"Authorization": f"Bearer {KEY}", "Content-Type": "application/json",
+                 "User-Agent": "voxcpm-worker-deploy/1.0"})
     try:
         with urllib.request.urlopen(req) as r:
             return json.loads(r.read() or "null")
